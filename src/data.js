@@ -1,3 +1,6 @@
+import ChickenRepublic from "./assets/Chicken-republic.png"
+import KFC from "./assets/KFC.png"
+import Dominos from "./assets/Dominos-pizza.png"
 
 
 export const categories = ["Burger", "Pizza", "Chicken", "Rice", "Shawarma", "Drinks"];
@@ -13,8 +16,10 @@ export const restaurants = [
     price: "₦₦",
     tags: ["High Protein", "Spicy", "Popular"],
     description: "Juicy grilled chicken, spicy wings and bold flavors that hit different.",
-    image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=900&auto=format&fit=crop",
+    image: ChickenRepublic,
   },
+
+
   {
     id: 2,
     name: "KFC",
@@ -23,7 +28,7 @@ export const restaurants = [
     price: "₦₦",
     tags: ["High Protein", "Budget Friendly", "Popular"],
     description: "The iconic taste of KFC. Crispy, fresh and finger lickin' good.",
-    image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=900&auto=format&fit=crop",
+    image: KFC,
   },
   {
     id: 3,
@@ -33,7 +38,7 @@ export const restaurants = [
     price: "₦₦₦",
     tags: ["Popular", "Budget Friendly"],
     description: "Classic hand-tossed pizza with melted cheese and fresh toppings.",
-    image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=900&auto=format&fit=crop",
+    image: Dominos,
   },
 ];
 
