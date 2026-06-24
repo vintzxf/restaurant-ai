@@ -13,9 +13,27 @@
   --red: #f87171;
   --amber: #fbbf24;
   --purple: #a78bfa;
+  --accent-contrast: #04141c;
 
   --font-heading: "Fraunces", serif;
   --font-body: "Inter", sans-serif;
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f8fb;
+  --bg-light: #eef3f7;
+  --card: #ffffff;
+  --border: #d9e2ea;
+  --text: #17202a;
+  --text-dim: #536171;
+  --text-faint: #778392;
+  --accent: #0284c7;
+  --accent-light: #0369a1;
+  --green: #047857;
+  --red: #dc2626;
+  --amber: #b45309;
+  --purple: #7c3aed;
+  --accent-contrast: #ffffff;
 }
 
 * {
@@ -28,6 +46,7 @@ body {
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -51,7 +70,7 @@ button {
 
 .btn-primary {
   background-color: var(--accent);
-  color: #04141c;
+  color: var(--accent-contrast);
 }
 
 .btn-outline {
@@ -73,7 +92,7 @@ button {
 .badge-green { background-color: rgba(52, 211, 153, 0.15); color: var(--green); }
 .badge-amber { background-color: rgba(251, 191, 36, 0.15); color: var(--amber); }
 .badge-purple { background-color: rgba(167, 139, 250, 0.15); color: var(--purple); }
-.badge-gray { background-color: rgba(255, 255, 255, 0.08); color: var(--text-dim); }
+.badge-gray { background-color: rgba(148, 163, 184, 0.16); color: var(--text-dim); }
 
 .card {
   background-color: var(--card);

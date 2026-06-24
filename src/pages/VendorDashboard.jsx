@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 import { stats, orders, menuItems as initialMenuItems } from "../data.js";
 import "./VendorDashboard.css";
 
@@ -60,7 +61,10 @@ export default function VendorDashboard() {
             <h1>Welcome back, Spice Paradise 👋</h1>
             <p>Here's what's happening with your business today.</p>
           </div>
-          <span className="pill">📅 Jun 14 – Jun 20, 2026</span>
+          <div className="dash-actions">
+            <ThemeToggle />
+            <span className="pill">📅 Jun 14 – Jun 20, 2026</span>
+          </div>
         </div>
 
         <div className="stat-grid">

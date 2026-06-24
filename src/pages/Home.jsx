@@ -93,19 +93,19 @@ export default function Home() {
 
       <section className="feature-strip">
         <div className="feature-item">
-          <h4><Sparkles color="cyan" size={15} /> AI-Powered Recommendations</h4>
+          <h4><Sparkles color="var(--accent)" size={15} /> AI-Powered Recommendations</h4>
           <p>Personalized picks you'll love</p>
         </div>
         <div className="feature-item">
-          <h4><Truck color="cyan" size={18} /> Fast & Reliable Delivery</h4>
+          <h4><Truck color="var(--accent)" size={18} /> Fast & Reliable Delivery</h4>
           <p>Get your meals on time</p>
         </div>
         <div className="feature-item">
-          <h4><Lock color="cyan" size={15} /> Secure Payments</h4>
+          <h4><Lock color="var(--accent)" size={15} /> Secure Payments</h4>
           <p>Pay safely and securely</p>
         </div>
         <div className="feature-item">
-          <h4><Headphones color="cyan" size={15} /> 24/7 Customer Support</h4>
+          <h4><Headphones color="var(--accent)" size={15} /> 24/7 Customer Support</h4>
           <p>We're here to help anytime</p>
         </div>
       </section>

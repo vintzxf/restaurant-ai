@@ -45,7 +45,7 @@
 }
 .role-toggle button.active {
   background-color: var(--accent);
-  color: #04141c;
+  color: var(--accent-contrast);
 }
 
 form label {
