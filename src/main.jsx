@@ -12,11 +12,13 @@ import Orders from "./pages/Orders.jsx";
 import Favourites from "./pages/Favourites.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import Chatbot from "./components/Chatbot.jsx"
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
       <BrowserRouter>
+      <Chatbot/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
