@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { categories, dietFilters, restaurants } from "../data.js";
+import React from 'react';
+import { Sparkles, Truck, Lock, Headphones, Star } from 'lucide-react';
 import "./Home.css";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
 
@@ -15,25 +18,7 @@ export default function Home() {
 
   return (
     <div className="page">
-      <header className="navbar">
-        <div className="brand">
-          Counter<span>AI</span>
-        </div>
-        <nav className="nav-links">
-          <a href="#">Home</a>
-          <a href="#">Restaurants</a>
-          <a href="#">Orders</a>
-          <a href="#">Favorites</a>
-        </nav>
-        <div className="nav-right">
-          <span className="pill"> Lagos, Nigeria</span>
-          <span className="cart"> cart</span>
-          <Link to="/signin" className="btn btn-outline">
-            Sign In
-          </Link>
-        </div>
-      </header>
-
+      <Navbar />
       <section className="hero">
         <h1>
           Order Like You're <em>At The Counter</em>
@@ -84,7 +69,8 @@ export default function Home() {
               <div className="restaurant-body">
                 <h3>{restaurant.name}</h3>
                 <p className="meta">
-                  ⭐ {restaurant.rating} · {restaurant.eta} · {restaurant.price}
+                  <Star color="yellow" size={15} />
+                   {restaurant.rating} · {restaurant.eta} · {restaurant.price}
                 </p>
                 <div className="tag-row">
                   {restaurant.tags.map((tag) => (
@@ -107,19 +93,19 @@ export default function Home() {
 
       <section className="feature-strip">
         <div className="feature-item">
-          <h4>✨ AI-Powered Recommendations</h4>
+          <h4><Sparkles color="cyan" size={15} /> AI-Powered Recommendations</h4>
           <p>Personalized picks you'll love</p>
         </div>
         <div className="feature-item">
-          <h4>🚚 Fast & Reliable Delivery</h4>
+          <h4><Truck color="cyan" size={18} /> Fast & Reliable Delivery</h4>
           <p>Get your meals on time</p>
         </div>
         <div className="feature-item">
-          <h4>🔒 Secure Payments</h4>
+          <h4><Lock color="cyan" size={15} /> Secure Payments</h4>
           <p>Pay safely and securely</p>
         </div>
         <div className="feature-item">
-          <h4>🎧 24/7 Customer Support</h4>
+          <h4><Headphones color="cyan" size={15} /> 24/7 Customer Support</h4>
           <p>We're here to help anytime</p>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "./Auth.css";
 export default function SignIn() {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ export default function SignIn() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="auth-page">
       <div className="auth-card card">
         <h1>Welcome Back</h1>
@@ -72,5 +75,6 @@ export default function SignIn() {
         </p>
       </div>
     </div>
+    </>
   );
 }

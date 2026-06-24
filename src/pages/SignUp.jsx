@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import "./Auth.css";
 
 export default function SignUp() {
@@ -25,6 +26,8 @@ export default function SignUp() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="auth-page">
       <div className="auth-card card">
         <h1>Create Account</h1>
@@ -92,5 +95,6 @@ export default function SignUp() {
         </p>
       </div>
     </div>
+    </>
   );
 }

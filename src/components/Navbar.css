@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.brand {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+}
+.brand span {
+  color: var(--accent);
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+.nav-links a {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cart {
+  font-size: 14px;
+  color: var(--text-dim);
+}
