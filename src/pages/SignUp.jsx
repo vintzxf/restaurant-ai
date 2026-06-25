@@ -13,17 +13,43 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleSubmit(e) {
-    e.preventDefault();
+async function handleSubmit(e) {
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
+  if (password !== confirmPassword) {
+    setErrorMessage("Passwords do not match.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErrorMessage(data.message);
       return;
     }
 
-    setErrorMessage("");
     navigate("/signin");
+  } catch (error) {
+    setErrorMessage("Failed to connect to server");
   }
+}
 
   return (
     <>

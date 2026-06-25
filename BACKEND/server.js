@@ -5,7 +5,8 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const restaurantRoutes = require("./routes/restaurantRoutes");
 const foodRoutes = require("./routes/foodRoutes");
-
+const chatRoutes = require("./routes/chatRoutes");
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 
@@ -15,6 +16,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/foods", foodRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("CounterAI Backend Running");

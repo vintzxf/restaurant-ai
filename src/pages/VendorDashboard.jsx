@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { stats, orders, menuItems as initialMenuItems } from "../data.js";
+import VendorOrders from "./VendorOrders.jsx";
 import "./VendorDashboard.css";
 
 // quick lookup so each order status gets a matching badge color
@@ -32,12 +33,14 @@ export default function VendorDashboard() {
   }
 
   return (
+
     <div className="dashboard">
       <aside className="sidebar">
         <Link to="/" className="brand">
           Counter<span>AI</span>
         </Link>
         <p className="sidebar-label">Vendor Dashboard</p>
+
 
         <nav className="sidebar-nav">
           <a href="#" className="active">Dashboard</a>
