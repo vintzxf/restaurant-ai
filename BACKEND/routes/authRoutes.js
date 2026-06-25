@@ -65,4 +65,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+router.post("/apply", (req, res) => {
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  console.log("OTP for", req.body.phone, "→", otp); 
+  res.json({ vendorId: "abc123" });
+});
+
 module.exports = router;

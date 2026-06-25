@@ -1,0 +1,73 @@
+/* VerifyPhone.css */
+
+.verify-card {
+  text-align: center;
+  max-width: 420px;
+}
+
+.verify-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* OTP digit inputs */
+.otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1.75rem 0 1.25rem;
+}
+
+.otp-input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1.5px solid var(--border, #334155);
+  background: var(--input-bg, #0f172a);
+  color: var(--text, #f1f5f9);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  caret-color: var(--accent, #38bdf8);
+}
+
+.otp-input:focus {
+  outline: none;
+  border-color: var(--accent, #38bdf8);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+
+/* Resend row */
+.resend-row {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent, #38bdf8);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+
+.resend-btn:disabled {
+  color: var(--text-secondary, #64748b);
+  cursor: default;
+}
+
+/* Dev note */
+.dev-note {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  background: rgba(255, 200, 0, 0.06);
+  border: 1px dashed rgba(255, 200, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}

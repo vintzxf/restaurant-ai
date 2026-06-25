@@ -7,8 +7,8 @@ const restaurantRoutes = require("./routes/restaurantRoutes");
 const foodRoutes = require("./routes/foodRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const authRoutes = require("./routes/authRoutes");
+const vendorRoutes = require("./routes/vendorRoutes");
 const app = express();
-
 
 connectDB();
 
@@ -18,6 +18,7 @@ app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/foods", foodRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/vendor", vendorRoutes); 
 
 app.get("/", (req, res) => {
   res.send("CounterAI Backend Running");

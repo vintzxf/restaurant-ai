@@ -1,0 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const { applyAsVendor, verifyOtp, resendOtp } = require("../controllers/vendorController");
+
+router.post("/apply", applyAsVendor);
+router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOtp);
+
+module.exports = router;
