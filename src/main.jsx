@@ -19,6 +19,7 @@ import VerifyPhone from "./pages/VerifyPhone.jsx";
 import PendingApproval from "./pages/PendingApproval.jsx";
 import VendorMenu from "./pages/VendorMenu.jsx";
 import VendorSettings from "./pages/VendorSettings.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -46,6 +47,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/vendor/orders" element={<VendorOrders />} />
           <Route path="/vendor/menu" element={<VendorMenu />} />
           <Route path="/vendor/settings" element={<VendorSettings />} />
+
+          {/* Admin dashboard */}
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
