@@ -2,11 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Auth.css";
+
 export default function SignIn() {
   const navigate = useNavigate();
-
-
-  const [role, setRole] = useState("customer");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,19 +14,11 @@ export default function SignIn() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
@@ -37,15 +27,11 @@ export default function SignIn() {
         return;
       }
 
-      // save logged in user
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      // redirect based on role stored in database
+
       if (data.user.role === "vendor") {
-        navigate("/vendor-dashboard");
+        navigate("/vendor");
       } else {
         navigate("/");
       }
@@ -61,24 +47,6 @@ export default function SignIn() {
         <div className="auth-card card">
           <h1>Welcome Back</h1>
           <p className="subtitle">Sign in to continue to CounterAI.</p>
-
-          {/* toggle between customer and vendor */}
-          <div className="role-toggle">
-            <button
-              type="button"
-              className={role === "customer" ? "active" : ""}
-              onClick={() => setRole("customer")}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              className={role === "vendor" ? "active" : ""}
-              onClick={() => setRole("vendor")}
-            >
-              Vendor
-            </button>
-          </div>
 
           <form onSubmit={handleSubmit}>
             <label>Email</label>
@@ -97,12 +65,10 @@ export default function SignIn() {
               required
             />
 
+            {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-            {errorMessage && (
-              <p className="error-text">{errorMessage}</p>
-            )}
             <button type="submit" className="btn btn-primary full-width">
-              Sign In as {role === "vendor" ? "Vendor" : "Customer"}
+              Sign In
             </button>
           </form>
 

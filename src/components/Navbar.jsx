@@ -25,13 +25,10 @@ function Navbar() {
         <Link to="/restaurants">Restaurants</Link>
 
         {user && <Link to="/orders">Orders</Link>}
-
         {user && <Link to="/favourites">Favourites</Link>}
 
         {user?.role === "vendor" && (
-          <Link to="/vendor-dashboard">
-            Dashboard
-          </Link>
+          <Link to="/vendor">Dashboard</Link>
         )}
       </nav>
 
@@ -51,16 +48,12 @@ function Navbar() {
             <Link to="/signin" className="btn btn-outline">
               Sign In
             </Link>
-
             <Link to="/signup" className="btn btn-primary">
               Sign Up
             </Link>
           </>
         ) : (
-          <button
-            onClick={handleLogout}
-            className="btn btn-outline"
-          >
+          <button onClick={handleLogout} className="btn btn-outline">
             Logout
           </button>
         )}

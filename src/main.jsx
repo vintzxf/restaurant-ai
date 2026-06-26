@@ -12,15 +12,13 @@ import Orders from "./pages/Orders.jsx";
 import Favourites from "./pages/Favourites.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
-import Chatbot from "./components/Chatbot.jsx"
+import Chatbot from "./components/Chatbot.jsx";
 import VendorOrders from "./pages/VendorOrders.jsx";
-import VendorApply from "./pages/VendorApply";
-import VerifyPhone from "./pages/VerifyPhone";
-import PendingApproval from "./pages/PendingApproval";
-import VendorMenu from "./pages/VendorMenu";
-import VendorCustomers from "./pages/VendorCustomers";
-import VendorSettings from "./pages/VendorSettings";
-
+import VendorApply from "./pages/VendorApply.jsx";
+import VerifyPhone from "./pages/VerifyPhone.jsx";
+import PendingApproval from "./pages/PendingApproval.jsx";
+import VendorMenu from "./pages/VendorMenu.jsx";
+import VendorSettings from "./pages/VendorSettings.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -28,21 +26,25 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <Chatbot />
         <Routes>
-          <Route path="/vendor-orders" element={<VendorOrders />} />
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/vendor" element={<VendorDashboard />} />
-          <Route path="/Restaurants" element={<Restaurants />} />
-          <Route path="/Orders" element={<Orders />} />
-          <Route path="/Favourites" element={<Favourites />} />
-          <Route path="/Cart" element={<Cart />} />
-          <Route path="/Checkout" element={<Checkout />} />
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/favourites" element={<Favourites />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+
+          {/* Vendor application flow */}
           <Route path="/vendor-apply" element={<VendorApply />} />
           <Route path="/verify-phone" element={<VerifyPhone />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
+
+          {/* Vendor dashboard */}
+          <Route path="/vendor" element={<VendorDashboard />} />
+          <Route path="/vendor/orders" element={<VendorOrders />} />
           <Route path="/vendor/menu" element={<VendorMenu />} />
-          <Route path="/vendor/customers" element={<VendorCustomers />} />
           <Route path="/vendor/settings" element={<VendorSettings />} />
         </Routes>
       </BrowserRouter>

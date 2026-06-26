@@ -1,36 +1,39 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 const User = require("../models/User");
+
 
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
+      return res.status(400).json({ message: "User already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
       role,
     });
 
     res.status(201).json({
       message: "Account created successfully",
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -39,37 +42,28 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-
     if (!user) {
-      return res.status(400).json({
-        message: "User not found",
-      });
+      return res.status(400).json({ message: "User not found" });
     }
 
-    if (user.password !== password) {
-      return res.status(400).json({
-        message: "Invalid password",
-      });
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: "Invalid password" });
     }
 
     return res.json({
       message: "Login successful",
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
-
-    return res.status(500).json({
-      message: "Server error",
-    });
+    return res.status(500).json({ message: "Server error" });
   }
-});
-
-
-router.post("/apply", (req, res) => {
-  const otp = Math.floor(100000 + Math.random() * 900000);
-  console.log("OTP for", req.body.phone, "→", otp); 
-  res.json({ vendorId: "abc123" });
 });
 
 module.exports = router;
