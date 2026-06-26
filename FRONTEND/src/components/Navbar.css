@@ -1,0 +1,58 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.brand {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+}
+.brand span {
+  color: var(--accent);
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+.nav-links a {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cart {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  font-size: 14px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.theme-toggle svg {
+  color: var(--accent);
+}

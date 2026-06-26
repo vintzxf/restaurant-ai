@@ -1,0 +1,101 @@
+/* ---------- Color theme & fonts (used everywhere via var(--name)) ---------- */
+:root {
+  --bg: #0a0a0f;
+  --bg-light: #14161f;
+  --card: #15171f;
+  --border: #262834;
+  --text: #f0f0f5;
+  --text-dim: #9aa0ad;
+  --text-faint: #666c7a;
+  --accent: #38bdf8;
+  --accent-light: #7dd3fc;
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --purple: #a78bfa;
+  --accent-contrast: #04141c;
+
+  --font-heading: "Fraunces", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f8fb;
+  --bg-light: #eef3f7;
+  --card: #ffffff;
+  --border: #d9e2ea;
+  --text: #17202a;
+  --text-dim: #536171;
+  --text-faint: #778392;
+  --accent: #0284c7;
+  --accent-light: #0369a1;
+  --green: #047857;
+  --red: #dc2626;
+  --amber: #b45309;
+  --purple: #7c3aed;
+  --accent-contrast: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 24px;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge-blue { background-color: rgba(56, 189, 248, 0.15); color: var(--accent-light); }
+.badge-red { background-color: rgba(248, 113, 113, 0.15); color: #fca5a5; }
+.badge-green { background-color: rgba(52, 211, 153, 0.15); color: var(--green); }
+.badge-amber { background-color: rgba(251, 191, 36, 0.15); color: var(--amber); }
+.badge-purple { background-color: rgba(167, 139, 250, 0.15); color: var(--purple); }
+.badge-gray { background-color: rgba(148, 163, 184, 0.16); color: var(--text-dim); }
+
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}

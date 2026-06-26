@@ -1,0 +1,126 @@
+/* VendorApply.css — extends Auth.css */
+
+.apply-page {
+  align-items: flex-start;
+  padding: 2rem 1rem 4rem;
+}
+
+.apply-card {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.apply-header {
+  margin-bottom: 2rem;
+}
+
+.apply-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent, #38bdf8);
+  border: 1px solid var(--accent, #38bdf8);
+  border-radius: 99px;
+  padding: 0.2rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.apply-header h1 {
+  margin: 0.25rem 0 0.4rem;
+}
+
+/* Two-column form rows */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, #334155);
+  background: var(--input-bg, #0f172a);
+  color: var(--text, #f1f5f9);
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.2rem;
+  cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent, #38bdf8);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Info hint box */
+.apply-info-box {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  background: var(--card-bg-alt, rgba(56, 189, 248, 0.06));
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.info-icon {
+  font-size: 1rem;
+  color: var(--accent, #38bdf8);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.apply-info-box p {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
