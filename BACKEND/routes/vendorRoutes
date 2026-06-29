@@ -1,9 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const { applyAsVendor, verifyOtp, resendOtp } = require("../controllers/vendorController");
+const {
+  applyAsVendor,
+  verifyOtp,
+  resendOtp,
+  getApplications,
+  approveVendor,
+  rejectVendor,
+} = require("../controllers/vendorController");
 
 router.post("/apply", applyAsVendor);
 router.post("/verify-otp", verifyOtp);
 router.post("/resend-otp", resendOtp);
+
+// Admin-only routes
+router.get("/applications", getApplications);
+router.patch("/approve/:id", approveVendor);
+router.patch("/reject/:id", rejectVendor);
 
 module.exports = router;

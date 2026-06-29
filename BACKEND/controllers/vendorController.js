@@ -1,41 +1,17 @@
-const crypto = require("crypto");
-const VendorApplication = require("../models/vendorapplication");
+const VendorApplication = require("../models/VendorApplication");
+const User = require("../models/User");
 
-const OTP_TTL_MINUTES = 10;
-
-function normalizePhone(phone) {
-  return String(phone || "").replace(/\D/g, "");
-}
-
-function generateOtp() {
-  return crypto.randomInt(100000, 1000000).toString();
-}
-
-function getOtpExpiresAt() {
-  return new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
-}
-
-function buildOtpResponse(application, otp) {
-  const response = {
-    vendorId: application._id,
-    message: "OTP sent. Verify your phone number to continue.",
-  };
-
-  if (process.env.NODE_ENV !== "production") {
-    response.devOtp = otp;
-  }
-
-  return response;
+async function isAdmin(userId) {
+  const user = await User.findById(userId);
+  return user && user.role === "admin";
 }
 
 async function applyAsVendor(req, res) {
   const { businessName, location, phone, category, menuDescription } = req.body;
   const normalizedPhone = normalizePhone(phone);
 
-  if (!businessName || !normalizedPhone || !category) {
-    return res
-      .status(400)
-      .json({ message: "Business name, phone, and category are required." });
+  if (!businessName || !phone || !category) {
+    return res.status(400).json({ message: "Business name, phone, and category are required." });
   }
 
   if (normalizedPhone.length < 11) {
@@ -45,19 +21,7 @@ async function applyAsVendor(req, res) {
   try {
     const existing = await VendorApplication.findOne({ phone: normalizedPhone });
     if (existing) {
-      if (existing.phoneVerified) {
-        return res
-          .status(400)
-          .json({ message: "An application with this phone number already exists." });
-      }
-
-      const otp = generateOtp();
-      existing.otp = otp;
-      existing.otpExpiresAt = getOtpExpiresAt();
-      await existing.save();
-
-      console.log(`\nOTP for ${normalizedPhone} -> ${otp}\n`);
-      return res.status(200).json(buildOtpResponse(existing, otp));
+      return res.status(400).json({ message: "An application with this phone number already exists." });
     }
 
     const otp = generateOtp();
@@ -81,6 +45,7 @@ async function applyAsVendor(req, res) {
   }
 }
 
+// POST /api/vendor/verify-otp
 async function verifyOtp(req, res) {
   const { vendorId, otp } = req.body;
 
@@ -92,39 +57,18 @@ async function verifyOtp(req, res) {
     const application = await VendorApplication.findById(vendorId);
 
     if (!application) {
-      return res
-        .status(404)
-        .json({ message: "Application not found. Please apply again." });
+      return res.status(404).json({ message: "Application not found. Please apply again." });
     }
 
-    if (application.phoneVerified) {
-      return res
-        .status(200)
-        .json({ message: "Phone already verified. Application is under review." });
-    }
-
-    if (!application.otpExpiresAt || application.otpExpiresAt < new Date()) {
-      return res
-        .status(400)
-        .json({ message: "Code expired. Please request a new one." });
-    }
-
-    if (application.otp !== String(otp).trim()) {
-      return res
-        .status(400)
-        .json({ message: "Incorrect code. Please try again." });
+    if (application.otp !== otp) {
+      return res.status(400).json({ message: "Incorrect code. Please try again." });
     }
 
     application.phoneVerified = true;
     application.otp = null;
-    application.otpExpiresAt = null;
     await application.save();
 
-    console.log(`Phone verified for application: ${vendorId}`);
-
-    return res
-      .status(200)
-      .json({ message: "Phone verified. Application is under review." });
+    return res.status(200).json({ message: "Phone verified. Application is under review." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error. Please try again." });
@@ -163,4 +107,70 @@ async function resendOtp(req, res) {
   }
 }
 
-module.exports = { applyAsVendor, verifyOtp, resendOtp };
+// GET /api/vendor/applications  (admin only)
+async function getApplications(req, res) {
+  try {
+    const adminCheck = await isAdmin(req.headers["x-user-id"]);
+    if (!adminCheck) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    const applications = await VendorApplication.find().sort({ createdAt: -1 });
+    return res.json(applications);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error." });
+  }
+}
+
+// PATCH /api/vendor/approve/:id  (admin only)
+async function approveVendor(req, res) {
+  try {
+    const adminCheck = await isAdmin(req.headers["x-user-id"]);
+    if (!adminCheck) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    const application = await VendorApplication.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    return res.json({ message: "Vendor approved.", application });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error." });
+  }
+}
+
+// PATCH /api/vendor/reject/:id  (admin only)
+async function rejectVendor(req, res) {
+  try {
+    const adminCheck = await isAdmin(req.headers["x-user-id"]);
+    if (!adminCheck) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    const application = await VendorApplication.findByIdAndUpdate(
+      req.params.id,
+      { status: "rejected" },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    return res.json({ message: "Vendor rejected.", application });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error." });
+  }
+}
+
+module.exports = { applyAsVendor, verifyOtp, resendOtp, getApplications, approveVendor, rejectVendor };
