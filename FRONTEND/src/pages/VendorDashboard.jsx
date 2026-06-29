@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { stats, orders, menuItems as initialMenuItems } from "../data.js";
 import "./VendorDashboard.css";
@@ -42,11 +42,11 @@ export default function VendorDashboard() {
 
 
           <nav className="sidebar-nav">
-            <Link to="/vendor-dashboard" className="active">Dashboard</Link>
-            <Link to="/vendor-orders">Orders</Link>
-            <Link to="/vendor-menu">Menu Builder</Link>
-            <Link to="/vendor-customers">Customers</Link>
-            <Link to="/vendor-settings">Settings</Link>
+            <Link to="/vendor" className="active">Dashboard</Link>
+            <Link to="/vendor/orders">Orders</Link>
+            <Link to="/vendor/menu">Menu Builder</Link>
+            <Link to="/vendor/customers">Customers</Link>
+            <Link to="/vendor/settings">Settings</Link>
           </nav>
 
           <div className="profile-box card">

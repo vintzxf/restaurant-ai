@@ -42,10 +42,11 @@ export default function SignIn() {
         "user",
         JSON.stringify(data.user)
       );
+      window.dispatchEvent(new Event("counterai-auth-changed"));
 
       // redirect based on role stored in database
       if (data.user.role === "vendor") {
-        navigate("/vendor-dashboard");
+        navigate("/vendor");
       } else {
         navigate("/");
       }

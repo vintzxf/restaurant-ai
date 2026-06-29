@@ -8,6 +8,7 @@ const vendorApplicationSchema = new mongoose.Schema(
     category: { type: String, required: true },
     menuDescription: { type: String },
     otp: { type: String },
+    otpExpiresAt: { type: Date },
     phoneVerified: { type: Boolean, default: false },
     status: {
       type: String,

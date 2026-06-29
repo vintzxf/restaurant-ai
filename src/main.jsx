@@ -43,7 +43,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
           {/* Vendor dashboard */}
           <Route path="/vendor" element={<VendorDashboard />} />
-          <Route path="/vendor/orders" element={<VendorOrders />} />
+          <Route path="/vendor-orders" element={<VendorOrders />} />
           <Route path="/vendor/menu" element={<VendorMenu />} />
           <Route path="/vendor/settings" element={<VendorSettings />} />
         </Routes>

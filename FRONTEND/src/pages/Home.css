@@ -117,6 +117,13 @@
   line-height: 1.5;
 }
 
+.empty-state {
+  color: var(--text-dim);
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 24px 0;
+}
+
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

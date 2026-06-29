@@ -33,6 +33,12 @@
   cursor: pointer;
 }
 
+.categories button.active {
+  border-color: var(--accent);
+  color: var(--accent-light);
+  background: rgba(56, 189, 248, 0.1);
+}
+
 .hero input {
   width: 100%;
   padding: 1rem;
@@ -118,4 +124,11 @@
 .menu-btn:hover {
   background: var(--accent);
   color: var(--accent-contrast);
+}
+
+.empty-state {
+  color: var(--text-dim);
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem 0;
 }

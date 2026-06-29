@@ -45,7 +45,7 @@ export default function VendorDashboard() {
             <Link to="/vendor-dashboard" className="active">Dashboard</Link>
             <Link to="/vendor-orders">Orders</Link>
             <Link to="/vendor-menu">Menu Builder</Link>
-            <Link to="/vendor-customers">Customers</Link>
+            <Link to="/vendor/customers">Customers</Link>
             <Link to="/vendor-settings">Settings</Link>
           </nav>
 

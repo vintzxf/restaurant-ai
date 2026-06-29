@@ -68,6 +68,11 @@ export default function VendorApply() {
    
       sessionStorage.setItem("pendingPhone", phone);
       sessionStorage.setItem("pendingVendorId", data.vendorId);
+      if (data.devOtp) {
+        sessionStorage.setItem("pendingDevOtp", data.devOtp);
+      } else {
+        sessionStorage.removeItem("pendingDevOtp");
+      }
 
       navigate("/verify-phone");
     } catch (error) {

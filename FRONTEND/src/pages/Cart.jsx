@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Cart.css";
 
-import chickenImg from "../assets/chicken-republic_2.png";
+import chickenImg from "../assets/Chicken-republic_2.png";
 import pizzaImg from "../assets/Dominos-pizza.webp";
 
 export default function Cart() {
@@ -156,7 +156,7 @@ export default function Cart() {
               </span>
             </div>
 
-            <Link to="/Checkout" className="checkout-btn">
+            <Link to="/checkout" className="checkout-btn">
               Proceed to Checkout
             </Link>
           </div>
