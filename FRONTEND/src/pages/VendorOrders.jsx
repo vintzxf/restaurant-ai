@@ -143,9 +143,9 @@ export default function VendorOrders() {
                     >
                       <td>#{order.id}</td>
                       <td>{order.customer}</td>
-                      <td>{order.items ? order.items.length : "—"}</td>
+                      <td>{order.items ? order.items.length : "-"}</td>
                       <td>{order.total}</td>
-                      <td>{order.time || "—"}</td>
+                      <td>{order.time || "-"}</td>
                       <td>
                         <span className={"badge " + statusColors[order.status]}>
                           {order.status}
@@ -182,7 +182,7 @@ export default function VendorOrders() {
               </button>
               <h3>Order #{selectedOrder.id}</h3>
               <p style={{ opacity: 0.6, fontSize: "0.85rem", marginBottom: "1rem" }}>
-                {selectedOrder.customer} · {selectedOrder.time || "—"}
+                {selectedOrder.customer} - {selectedOrder.time || "-"}
               </p>
 
               <span className={"badge " + statusColors[selectedOrder.status]} style={{ marginBottom: "1.5rem", display: "inline-block" }}>

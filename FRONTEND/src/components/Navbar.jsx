@@ -9,6 +9,7 @@ function Navbar() {
 
   function handleLogout() {
     localStorage.removeItem("user");
+    window.dispatchEvent(new Event("counterai-auth-changed"));
     navigate("/signin");
   }
 
@@ -29,7 +30,7 @@ function Navbar() {
         {user && <Link to="/favourites">Favourites</Link>}
 
         {user?.role === "vendor" && (
-          <Link to="/vendor-dashboard">
+          <Link to="/vendor">
             Dashboard
           </Link>
         )}

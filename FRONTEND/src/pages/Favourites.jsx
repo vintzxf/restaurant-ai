@@ -3,17 +3,17 @@ import { Star } from "lucide-react";
 import Navbar from "../components/Navbar";
 import "./Favourites.css";
 
-import chickenRepublicImg from "../assets/chicken-republic_2.png";
+import chickenRepublicImg from "../assets/Chicken-republic_2.png";
 import kfcImg from "../assets/KFC.png";
 
 export default function Favourites() {
-  const [Favourites, setFavourites] = useState([
+  const [favourites, setFavourites] = useState([
     {
       id: 1,
       name: "Chicken Republic",
       rating: 4.6,
       eta: "20-30 mins",
-      price: "₦₦",
+      price: "Mid-range",
       tags: ["High Protein", "Spicy", "Popular"],
       description:
         "Juicy grilled chicken, spicy wings and bold flavors that hit different.",
@@ -24,7 +24,7 @@ export default function Favourites() {
       name: "KFC",
       rating: 4.7,
       eta: "25-35 mins",
-      price: "₦₦",
+      price: "Mid-range",
       tags: ["High Protein", "Budget Friendly", "Popular"],
       description:
         "The iconic taste of KFC. Crispy, fresh and finger lickin' good.",
@@ -33,7 +33,7 @@ export default function Favourites() {
   ]);
 
   const removeFavourite = (id) => {
-    setFavourites(Favourites.filter((restaurant) => restaurant.id !== id));
+    setFavourites(favourites.filter((restaurant) => restaurant.id !== id));
   };
 
   return (
@@ -43,14 +43,14 @@ export default function Favourites() {
       <section className="Favourites-section">
         <h1>Your Favourites</h1>
 
-        {Favourites.length === 0 ? (
+        {favourites.length === 0 ? (
           <div className="empty-state">
             <h3>No Favourites yet</h3>
             <p>Restaurants you save will appear here.</p>
           </div>
         ) : (
           <div className="Favourites-grid">
-            {Favourites.map((restaurant) => (
+            {favourites.map((restaurant) => (
               <div className="Favourite-card" key={restaurant.id}>
                 <img
                   src={restaurant.image}
@@ -66,7 +66,7 @@ export default function Favourites() {
                       fill="gold"
                       color="gold"
                     />
-                    {restaurant.rating} · {restaurant.eta} ·{" "}
+                    {restaurant.rating} - {restaurant.eta} -{" "}
                     {restaurant.price}
                   </p>
 

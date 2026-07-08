@@ -55,10 +55,21 @@ export default function VendorDashboard() {
 
 
           <nav className="sidebar-nav">
-            <Link to="/vendor" className="active">Dashboard</Link>
-            <Link to="/vendor/orders">Orders</Link>
-            <Link to="/vendor/menu">Menu Builder</Link>
-            <Link to="/vendor/settings">Settings</Link>
+            <Link to="/vendor" className="active">
+              Dashboard
+            </Link>
+
+            <Link to="/vendor/orders">
+              Orders
+            </Link>
+
+            <Link to="/vendor/menu">
+              Menu Builder
+            </Link>
+
+            <Link to="/vendor/settings">
+              Settings
+            </Link>
           </nav>
 
           <div className="profile-box card">

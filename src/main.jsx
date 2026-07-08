@@ -43,6 +43,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/verify-phone" element={<VerifyPhone />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
 
+
           {/* Vendor dashboard — protected: must be logged in AND role "vendor" */}
           <Route
             path="/vendor"
@@ -52,6 +53,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/vendor/orders"
             element={
@@ -60,6 +62,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/vendor/menu"
             element={
@@ -68,6 +71,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/vendor/settings"
             element={
@@ -76,6 +80,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </ProtectedRoute>
             }
           />
+
+          {/* Vendor dashboard */}
+          <Route path="/vendor" element={<VendorDashboard />} />
+          <Route path="/vendor-orders" element={<VendorOrders />} />
+          <Route path="/vendor/menu" element={<VendorMenu />} />
+          <Route path="/vendor/settings" element={<VendorSettings />} />
+
 
           {/* Admin dashboard — protected */}
           <Route

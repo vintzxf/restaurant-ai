@@ -10,7 +10,19 @@ async function isAdmin(userId) {
 
 // POST /api/vendor/apply
 async function applyAsVendor(req, res) {
-  const { businessName, location, phone, email, password, category, menuDescription } = req.body;
+
+  const {
+    businessName,
+    location,
+    phone,
+    email,
+    password,
+    category,
+    menuDescription,
+  } = req.body;
+
+  const normalizedPhone = normalizePhone(phone);
+
 
   if (!businessName || !phone || !category || !email || !password) {
     return res.status(400).json({
@@ -18,8 +30,16 @@ async function applyAsVendor(req, res) {
     });
   }
 
+  if (normalizedPhone.length < 11) {
+    return res.status(400).json({ message: "Enter a valid phone number." });
+  }
+
   try {
-    const existingApplication = await VendorApplication.findOne({ phone });
+
+    const existingApplication = await VendorApplication.findOne({
+      phone: normalizedPhone,
+    });
+
     if (existingApplication) {
       return res.status(400).json({
         message: "An application with this phone number already exists.",
@@ -27,27 +47,36 @@ async function applyAsVendor(req, res) {
     }
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: "An account with this email already exists." });
+      return res.status(400).json({
+        message: "An account with this email already exists.",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const otp = generateOtp();
+
 
     const application = await VendorApplication.create({
       businessName,
       location,
-      phone,
+
+      phone: normalizedPhone,
       email,
       password: hashedPassword,
+      phone: normalizedPhone,
+
       category,
       menuDescription,
       otp,
+      otpExpiresAt: getOtpExpiresAt(),
     });
 
-    console.log(`\n OTP for ${phone} → ${otp}\n`);
+    console.log(`\nOTP for ${normalizedPhone} -> ${otp}\n`);
 
-    return res.status(201).json({ vendorId: application._id });
+    return res.status(201).json(buildOtpResponse(application, otp));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error. Please try again." });
@@ -57,6 +86,10 @@ async function applyAsVendor(req, res) {
 // POST /api/vendor/verify-otp
 async function verifyOtp(req, res) {
   const { vendorId, otp } = req.body;
+
+  if (!vendorId || !otp) {
+    return res.status(400).json({ message: "Vendor ID and OTP are required." });
+  }
 
   try {
     const application = await VendorApplication.findById(vendorId);
@@ -101,9 +134,12 @@ async function verifyOtp(req, res) {
   }
 }
 
-// POST /api/vendor/resend-otp
 async function resendOtp(req, res) {
   const { vendorId } = req.body;
+
+  if (!vendorId) {
+    return res.status(400).json({ message: "Vendor ID is required." });
+  }
 
   try {
     const application = await VendorApplication.findById(vendorId);
@@ -112,13 +148,18 @@ async function resendOtp(req, res) {
       return res.status(404).json({ message: "Application not found." });
     }
 
-    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    application.otp = newOtp;
+    if (application.phoneVerified) {
+      return res.status(400).json({ message: "Phone number is already verified." });
+    }
+
+    const otp = generateOtp();
+    application.otp = otp;
+    application.otpExpiresAt = getOtpExpiresAt();
     await application.save();
 
-    console.log(`\n Resent OTP for ${application.phone} → ${newOtp}\n`);
+    console.log(`\nResent OTP for ${application.phone} -> ${otp}\n`);
 
-    return res.status(200).json({ message: "OTP resent." });
+    return res.status(200).json(buildOtpResponse(application, otp));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error. Please try again." });
@@ -217,6 +258,7 @@ async function rejectVendor(req, res) {
     return res.status(500).json({ message: "Server error." });
   }
 }
+
 
 // DELETE /api/vendor/clear-test/:phone
 // Dev-only convenience: deletes a test application AND its linked user account

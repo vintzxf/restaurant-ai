@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { categories, dietFilters, restaurants } from "../data.js";
-import React from 'react';
 import { Sparkles, Truck, Lock, Headphones, Star } from 'lucide-react';
 import "./Home.css";
 import Navbar from "../components/Navbar";
@@ -12,9 +10,27 @@ export default function Home() {
 
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [activeFilter, setActiveFilter] = useState(dietFilters[0]);
-  const filteredRestaurants = restaurants.filter((r) =>
-    r.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const searchableText = [
+      restaurant.name,
+      restaurant.description,
+      restaurant.price,
+      ...restaurant.tags,
+      ...restaurant.categories,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = searchableText.includes(normalizedSearch);
+    const matchesCategory =
+      activeCategory === "All" || restaurant.categories.includes(activeCategory);
+    const matchesDietFilter =
+      activeFilter === "All" || restaurant.tags.includes(activeFilter);
+
+    return matchesSearch && matchesCategory && matchesDietFilter;
+  });
 
   return (
     <div className="page">
@@ -23,7 +39,7 @@ export default function Home() {
         <h1>
           Order Like You're <em>At The Counter</em>
         </h1>
-        <p>Tell us what you're craving — local vendors, ready in minutes.</p>
+        <p>Tell us what you're craving - local vendors, ready in minutes.</p>
 
         <input
           className="search-input"
@@ -70,7 +86,7 @@ export default function Home() {
                 <h3>{restaurant.name}</h3>
                 <p className="meta">
                   <Star color="yellow" size={15} />
-                   {restaurant.rating} · {restaurant.eta} · {restaurant.price}
+                   {restaurant.rating} - {restaurant.eta} - {restaurant.price}
                 </p>
                 <div className="tag-row">
                   {restaurant.tags.map((tag) => (
@@ -86,7 +102,7 @@ export default function Home() {
           ))}
 
           {filteredRestaurants.length === 0 && (
-            <p>No restaurants match "{searchTerm}".</p>
+            <p className="empty-state">No restaurants match your filters.</p>
           )}
         </div>
       </section>

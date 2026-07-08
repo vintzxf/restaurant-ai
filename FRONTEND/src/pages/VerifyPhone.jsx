@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Auth.css";
@@ -7,46 +7,38 @@ import "./VerifyPhone.css";
 export default function VerifyPhone() {
   const navigate = useNavigate();
 
-  // Pull the phone that VendorApply saved
   const phone = sessionStorage.getItem("pendingPhone") || "";
   const vendorId = sessionStorage.getItem("pendingVendorId") || "";
 
-  // 6 individual digit inputs
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
-  const inputRefs = useRef([]);
-
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(60);
-  const [otpSent, setOtpSent] = useState(true); // assume sent on arrival
+  const [devOtp, setDevOtp] = useState(sessionStorage.getItem("pendingDevOtp") || "");
+  const inputRefs = useRef([]);
 
-  // Countdown timer for resend
   useEffect(() => {
     if (resendCooldown <= 0) return;
-    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    const timer = setTimeout(() => setResendCooldown((count) => count - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCooldown]);
 
-  // If no phone in session, send back
   useEffect(() => {
-    if (!phone) navigate("/vendor-apply");
-  }, [phone, navigate]);
+    if (!phone || !vendorId) navigate("/vendor-apply");
+  }, [phone, vendorId, navigate]);
 
   function handleDigitChange(index, value) {
-    // Only allow single digits
     const cleaned = value.replace(/\D/g, "").slice(-1);
     const updated = [...digits];
     updated[index] = cleaned;
     setDigits(updated);
 
-    // Auto-advance to next input
     if (cleaned && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   }
 
   function handleKeyDown(index, e) {
-    // Backspace on empty input moves focus back
     if (e.key === "Backspace" && !digits[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -55,12 +47,13 @@ export default function VerifyPhone() {
   function handlePaste(e) {
     e.preventDefault();
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    const updated = [...digits];
-    for (let i = 0; i < pasted.length; i++) {
-      updated[i] = pasted[i];
+    const updated = ["", "", "", "", "", ""];
+
+    for (let index = 0; index < pasted.length; index += 1) {
+      updated[index] = pasted[index];
     }
+
     setDigits(updated);
-    // Focus last filled input
     inputRefs.current[Math.min(pasted.length, 5)]?.focus();
   }
 
@@ -91,9 +84,9 @@ export default function VerifyPhone() {
         return;
       }
 
-      // OTP passed — clear session and go to pending page
       sessionStorage.removeItem("pendingPhone");
       sessionStorage.removeItem("pendingVendorId");
+      sessionStorage.removeItem("pendingDevOtp");
       navigate("/pending-approval");
     } catch (error) {
       setErrorMessage("Failed to connect to server.");
@@ -103,16 +96,31 @@ export default function VerifyPhone() {
 
   async function handleResend() {
     if (resendCooldown > 0) return;
+    setErrorMessage("");
+
     try {
-      await fetch("http://localhost:3000/api/vendor/resend-otp", {
+      const response = await fetch("http://localhost:3000/api/vendor/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ vendorId }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.message || "Failed to resend. Try again.");
+        return;
+      }
+
+      if (data.devOtp) {
+        sessionStorage.setItem("pendingDevOtp", data.devOtp);
+        setDevOtp(data.devOtp);
+      }
+
       setResendCooldown(60);
       setDigits(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
-    } catch {
+    } catch (error) {
       setErrorMessage("Failed to resend. Try again.");
     }
   }
@@ -126,7 +134,7 @@ export default function VerifyPhone() {
       <Navbar />
       <div className="auth-page">
         <div className="auth-card verify-card card">
-          <div className="verify-icon">📱</div>
+          <div className="verify-icon">Phone</div>
           <h1>Verify your number</h1>
           <p className="subtitle">
             We sent a 6-digit code to <strong>{maskedPhone}</strong>.
@@ -135,18 +143,18 @@ export default function VerifyPhone() {
 
           <form onSubmit={handleVerify}>
             <div className="otp-row" onPaste={handlePaste}>
-              {digits.map((digit, i) => (
+              {digits.map((digit, index) => (
                 <input
-                  key={i}
-                  ref={(el) => (inputRefs.current[i] = el)}
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
                   className="otp-input"
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
                   value={digit}
-                  onChange={(e) => handleDigitChange(i, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(i, e)}
-                  autoFocus={i === 0}
+                  onChange={(e) => handleDigitChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  autoFocus={index === 0}
                 />
               ))}
             </div>
@@ -158,7 +166,7 @@ export default function VerifyPhone() {
               className="btn btn-primary full-width"
               disabled={loading}
             >
-              {loading ? "Verifying…" : "Verify Code"}
+              {loading ? "Verifying..." : "Verify Code"}
             </button>
           </form>
 
@@ -173,10 +181,11 @@ export default function VerifyPhone() {
             </button>
           </p>
 
-          {/* Dev helper — remove in production */}
-          <p className="dev-note">
-            🛠 Dev mode: check your server console for the OTP code.
-          </p>
+          {devOtp && (
+            <p className="dev-note">
+              Dev mode OTP: <strong>{devOtp}</strong>
+            </p>
+          )}
         </div>
       </div>
     </>
