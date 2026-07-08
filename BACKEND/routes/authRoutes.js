@@ -51,6 +51,16 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
+    // Vendors whose account isn't active yet don't get a full session — send
+    // them to check their application status instead of into the dashboard.
+    if (user.role === "vendor" && user.status !== "active") {
+      return res.json({
+        pending: true,
+        status: user.status,
+        businessName: user.businessName,
+      });
+    }
+
     return res.json({
       message: "Login successful",
       user: {
@@ -58,6 +68,7 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        businessName: user.businessName,
       },
     });
   } catch (error) {

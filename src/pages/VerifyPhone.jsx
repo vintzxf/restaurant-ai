@@ -92,8 +92,10 @@ export default function VerifyPhone() {
       }
 
       // OTP passed — clear session and go to pending page
+      sessionStorage.setItem("approvalVendorId", vendorId);
       sessionStorage.removeItem("pendingPhone");
       sessionStorage.removeItem("pendingVendorId");
+      sessionStorage.setItem("approvalVendorId", vendorId)
       navigate("/pending-approval");
     } catch (error) {
       setErrorMessage("Failed to connect to server.");

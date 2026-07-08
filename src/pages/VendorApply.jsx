@@ -23,6 +23,8 @@ export default function VendorApply() {
   const [businessName, setBusinessName] = useState("");
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [category, setCategory] = useState("");
   const [menuDescription, setMenuDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,6 +44,11 @@ export default function VendorApply() {
       return;
     }
 
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -52,6 +59,8 @@ export default function VendorApply() {
           businessName,
           location,
           phone,
+          email,
+          password,
           category,
           menuDescription,
         }),
@@ -65,7 +74,7 @@ export default function VendorApply() {
         return;
       }
 
-   
+
       sessionStorage.setItem("pendingPhone", phone);
       sessionStorage.setItem("pendingVendorId", data.vendorId);
 
@@ -143,6 +152,30 @@ export default function VendorApply() {
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group">
+                <label>Login Email</label>
+                <input
+                  type="email"
+                  placeholder="you@business.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="At least 6 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             <div className="form-group full-width">
               <label>Brief Menu Description</label>
               <textarea
@@ -161,7 +194,8 @@ export default function VendorApply() {
               <p>
                 After submitting, you'll verify your phone number with a
                 one-time code. Your application then goes to our admin team for
-                review — usually within 24 hours.
+                review — usually within 24 hours. Use the email and password you
+                set here to check your status or log in once you're approved.
               </p>
             </div>
 

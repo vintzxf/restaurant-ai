@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import { ThemeProvider } from "./components/ThemeContext.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home from "./pages/Home.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import SignUp from "./pages/SignUp.jsx";
@@ -42,14 +43,52 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/verify-phone" element={<VerifyPhone />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
 
-          {/* Vendor dashboard */}
-          <Route path="/vendor" element={<VendorDashboard />} />
-          <Route path="/vendor/orders" element={<VendorOrders />} />
-          <Route path="/vendor/menu" element={<VendorMenu />} />
-          <Route path="/vendor/settings" element={<VendorSettings />} />
+          {/* Vendor dashboard — protected: must be logged in AND role "vendor" */}
+          <Route
+            path="/vendor"
+            element={
+              <ProtectedRoute role="vendor">
+                <VendorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor/orders"
+            element={
+              <ProtectedRoute role="vendor">
+                <VendorOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor/menu"
+            element={
+              <ProtectedRoute role="vendor">
+                <VendorMenu />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor/settings"
+            element={
+              <ProtectedRoute role="vendor">
+                <VendorSettings />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Admin dashboard */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          {/* Admin dashboard — protected */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch-all: anything unmatched goes home instead of a black screen */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

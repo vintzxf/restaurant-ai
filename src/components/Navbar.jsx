@@ -1,16 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import { getSession, clearSession } from "../utils/auth";
 import "./Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  // getSession() returns null if there's no session OR if it has expired —
+  // so this line also enforces "log out automatically once the session expires."
+  const user = getSession();
 
   function handleLogout() {
-    localStorage.removeItem("user");
+    clearSession();
     navigate("/signin");
   }
+
+  const greetingLabel = user?.role === "vendor" ? "vendor" : "user";
+  const displayName = user?.businessName || user?.name || greetingLabel;
 
   return (
     <header className="navbar">
@@ -25,10 +31,13 @@ function Navbar() {
         <Link to="/restaurants">Restaurants</Link>
 
         {user && <Link to="/orders">Orders</Link>}
+
         {user && <Link to="/favourites">Favourites</Link>}
 
         {user?.role === "vendor" && (
-          <Link to="/vendor">Dashboard</Link>
+          <Link to="/vendor">
+            Dashboard
+          </Link>
         )}
       </nav>
 
@@ -43,17 +52,27 @@ function Navbar() {
           </Link>
         )}
 
+        {user && (
+          <span className="pill greeting">
+            Hello, {displayName}
+          </span>
+        )}
+
         {!user ? (
           <>
             <Link to="/signin" className="btn btn-outline">
               Sign In
             </Link>
+
             <Link to="/signup" className="btn btn-primary">
               Sign Up
             </Link>
           </>
         ) : (
-          <button onClick={handleLogout} className="btn btn-outline">
+          <button
+            onClick={handleLogout}
+            className="btn btn-outline"
+          >
             Logout
           </button>
         )}

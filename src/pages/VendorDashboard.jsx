@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { getSession } from "../utils/auth";
 import { stats, orders, menuItems as initialMenuItems } from "../data.js";
 import "./VendorDashboard.css";
 
@@ -16,6 +17,18 @@ const statusColors = {
 const orderFilters = ["All", "New", "Preparing", "Ready", "Completed"];
 
 export default function VendorDashboard() {
+  // ProtectedRoute already guarantees this is a logged-in vendor by the time
+  // we get here, but we still read it to show their real name instead of a
+  // hardcoded placeholder.
+  const user = getSession();
+  const businessName = user?.businessName || "Vendor";
+  const initials = businessName
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   const [orderFilter, setOrderFilter] = useState("All");
 
   const [menuItems, setMenuItems] = useState(initialMenuItems);
@@ -42,17 +55,16 @@ export default function VendorDashboard() {
 
 
           <nav className="sidebar-nav">
-            <Link to="/vendor-dashboard" className="active">Dashboard</Link>
-            <Link to="/vendor-orders">Orders</Link>
-            <Link to="/vendor-menu">Menu Builder</Link>
-            <Link to="/vendor-customers">Customers</Link>
-            <Link to="/vendor-settings">Settings</Link>
+            <Link to="/vendor" className="active">Dashboard</Link>
+            <Link to="/vendor/orders">Orders</Link>
+            <Link to="/vendor/menu">Menu Builder</Link>
+            <Link to="/vendor/settings">Settings</Link>
           </nav>
 
           <div className="profile-box card">
-            <div className="avatar-circle">SP</div>
+            <div className="avatar-circle">{initials}</div>
             <div>
-              <p className="profile-name">Spice Paradise</p>
+              <p className="profile-name">{businessName}</p>
               <p className="profile-location">Wuse 2, Abuja</p>
             </div>
           </div>
@@ -60,7 +72,7 @@ export default function VendorDashboard() {
         <main className="dash-main">
           <div className="dash-header">
             <div>
-              <h1>Welcome back, Spice Paradise 👋</h1>
+              <h1>Welcome back, {businessName} 👋</h1>
               <p>Here's what's happening with your business today.</p>
             </div>
             <div className="dash-actions">

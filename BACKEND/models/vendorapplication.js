@@ -5,6 +5,9 @@ const vendorApplicationSchema = new mongoose.Schema(
     businessName: { type: String, required: true },
     location: { type: String, required: true },
     phone: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true }, // hashed — used to create the
+    // linked User account once the phone number is verified
     category: { type: String, required: true },
     menuDescription: { type: String },
     otp: { type: String },
