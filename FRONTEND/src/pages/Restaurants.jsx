@@ -10,7 +10,7 @@ export default function Restaurants() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/restaurants")
+    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants`)
       .then((res) => res.json())
       .then((data) => setRestaurants(Array.isArray(data) ? data : []))
       .catch(() => setRestaurants([]))

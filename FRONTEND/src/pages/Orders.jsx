@@ -17,7 +17,7 @@ export default function Orders() {
       return;
     }
 
-    fetch(`http://localhost:3000/api/orders/customer/${user._id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/orders/customer/${user._id}`)
       .then((res) => res.json())
       .then((data) => setOrders(Array.isArray(data) ? data : []))
       .catch(() => setOrders([]))

@@ -35,14 +35,14 @@ export default function VendorOrders() {
       return;
     }
 
-    fetch("http://localhost:3000/api/restaurants/mine", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())
       .then((data) => {
         if (!data._id) return [];
         setRestaurant(data);
-        return fetch(`http://localhost:3000/api/orders/restaurant/${data._id}`).then((r) =>
+        return fetch(`${import.meta.env.VITE_API_URL}/api/orders/restaurant/${data._id}`).then((r) =>
           r.json()
         );
       })
@@ -59,7 +59,7 @@ export default function VendorOrders() {
     if (!next) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${order._id}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${order._id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: next }),

@@ -24,7 +24,7 @@ export default function VendorSettings() {
       return;
     }
 
-    fetch("http://localhost:3000/api/restaurants/mine", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())

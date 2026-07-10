@@ -16,8 +16,8 @@ export default function RestaurantDetail() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`http://localhost:3000/api/restaurants/${id}`).then((r) => r.json()),
-      fetch(`http://localhost:3000/api/foods/restaurant/${id}`).then((r) => r.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/${id}`).then((r) => r.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/foods/restaurant/${id}`).then((r) => r.json()),
     ])
       .then(([restaurantData, foodsData]) => {
         if (restaurantData.message) {

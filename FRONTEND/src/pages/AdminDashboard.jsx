@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   async function fetchApplications() {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/vendor/applications", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/vendor/applications`, {
         headers: { "x-user-id": user._id },
       });
       const data = await res.json();
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   async function fetchUsers() {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/admin/users", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
         headers: { "x-user-id": user._id },
       });
       const data = await res.json();
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
   async function handleDecision(vendorId, decision) {
     try {
-      const res = await fetch(`http://localhost:3000/api/vendor/${decision}/${vendorId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/vendor/${decision}/${vendorId}`, {
         method: "PATCH",
         headers: { "x-user-id": user._id },
       });

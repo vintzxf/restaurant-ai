@@ -50,7 +50,7 @@ export default function VendorDashboard() {
       return;
     }
 
-    fetch("http://localhost:3000/api/restaurants/mine", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())
@@ -59,8 +59,8 @@ export default function VendorDashboard() {
         setRestaurant(data);
 
         const [ordersRes, foodsRes] = await Promise.all([
-          fetch(`http://localhost:3000/api/orders/restaurant/${data._id}`).then((r) => r.json()),
-          fetch(`http://localhost:3000/api/foods/restaurant/${data._id}`).then((r) => r.json()),
+          fetch(`${import.meta.env.VITE_API_URL}/api/orders/restaurant/${data._id}`).then((r) => r.json()),
+          fetch(`${import.meta.env.VITE_API_URL}/api/foods/restaurant/${data._id}`).then((r) => r.json()),
         ]);
 
         setOrders(Array.isArray(ordersRes) ? ordersRes : []);
