@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
-import { getSession } from "../utils/auth";
+import { getSession } from "../utils/auth.js";
 import "./VendorDashboard.css";
 import "./VendorMenu.css";
 
