@@ -24,7 +24,7 @@ export default function VendorSettings() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
+    fetch(`https://counterai-backend.onrender.com/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())

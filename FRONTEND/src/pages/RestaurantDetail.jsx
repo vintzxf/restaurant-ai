@@ -16,8 +16,8 @@ export default function RestaurantDetail() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/${id}`).then((r) => r.json()),
-      fetch(`${import.meta.env.VITE_API_URL}/api/foods/restaurant/${id}`).then((r) => r.json()),
+      fetch(`https://counterai-backend.onrender.com/api/restaurants/${id}`).then((r) => r.json()),
+      fetch(`https://counterai-backend.onrender.com/api/foods/restaurant/${id}`).then((r) => r.json()),
     ])
       .then(([restaurantData, foodsData]) => {
         if (restaurantData.message) {

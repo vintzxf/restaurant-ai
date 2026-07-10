@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Chatbot.css";
 
-const BACKEND_URL = `${import.meta.env.VITE_API_URL}`;
+const BACKEND_URL = `https://counterai-backend.onrender.com`;
 const AUTH_EVENT = "counterai-auth-changed";
 
 const defaultMessages = [

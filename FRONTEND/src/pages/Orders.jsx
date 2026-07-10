@@ -17,7 +17,7 @@ export default function Orders() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/orders/customer/${user._id}`)
+    fetch(`https://counterai-backend.onrender.com/api/orders/customer/${user._id}`)
       .then((res) => res.json())
       .then((data) => setOrders(Array.isArray(data) ? data : []))
       .catch(() => setOrders([]))

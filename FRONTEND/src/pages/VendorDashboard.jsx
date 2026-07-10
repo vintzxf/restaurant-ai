@@ -50,7 +50,7 @@ export default function VendorDashboard() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
+    fetch(`https://counterai-backend.onrender.com/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())
@@ -59,8 +59,8 @@ export default function VendorDashboard() {
         setRestaurant(data);
 
         const [ordersRes, foodsRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/api/orders/restaurant/${data._id}`).then((r) => r.json()),
-          fetch(`${import.meta.env.VITE_API_URL}/api/foods/restaurant/${data._id}`).then((r) => r.json()),
+          fetch(`https://counterai-backend.onrender.com/api/orders/restaurant/${data._id}`).then((r) => r.json()),
+          fetch(`https://counterai-backend.onrender.com/api/foods/restaurant/${data._id}`).then((r) => r.json()),
         ]);
 
         setOrders(Array.isArray(ordersRes) ? ordersRes : []);

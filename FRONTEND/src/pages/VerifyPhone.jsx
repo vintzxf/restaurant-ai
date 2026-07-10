@@ -70,7 +70,7 @@ export default function VerifyPhone() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vendor/verify-otp`, {
+      const response = await fetch(`https://counterai-backend.onrender.com/api/vendor/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ vendorId, otp }),
@@ -99,7 +99,7 @@ export default function VerifyPhone() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vendor/resend-otp`, {
+      const response = await fetch(`https://counterai-backend.onrender.com/api/vendor/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ vendorId }),

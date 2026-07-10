@@ -31,14 +31,14 @@ export default function VendorMenu() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/restaurants/mine`, {
+    fetch(`https://counterai-backend.onrender.com/api/restaurants/mine`, {
       headers: { "x-user-id": user._id },
     })
       .then((res) => res.json())
       .then((data) => {
         if (!data._id) return [];
         setRestaurant(data);
-        return fetch(`${import.meta.env.VITE_API_URL}/api/foods/restaurant/${data._id}`).then((r) =>
+        return fetch(`https://counterai-backend.onrender.com/api/foods/restaurant/${data._id}`).then((r) =>
           r.json()
         );
       })
@@ -53,7 +53,7 @@ export default function VendorMenu() {
 
   async function toggleAvailability(item) {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/foods/${item._id}`, {
+      const response = await fetch(`https://counterai-backend.onrender.com/api/foods/${item._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ available: !item.available }),
@@ -109,7 +109,7 @@ export default function VendorMenu() {
 
     try {
       if (editingId !== null) {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/foods/${editingId}`, {
+        const response = await fetch(`https://counterai-backend.onrender.com/api/foods/${editingId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -117,7 +117,7 @@ export default function VendorMenu() {
         const updated = await response.json();
         setMenuItems((prev) => prev.map((i) => (i._id === editingId ? updated : i)));
       } else {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/foods`, {
+        const response = await fetch(`https://counterai-backend.onrender.com/api/foods`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -136,7 +136,7 @@ export default function VendorMenu() {
 
   async function handleDelete(id) {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/foods/${id}`, { method: "DELETE" });
+      await fetch(`https://counterai-backend.onrender.com/api/foods/${id}`, { method: "DELETE" });
       setMenuItems((prev) => prev.filter((item) => item._id !== id));
     } catch {
       setErrorMessage("Could not delete item. Please try again.");

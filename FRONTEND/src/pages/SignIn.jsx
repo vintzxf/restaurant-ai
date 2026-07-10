@@ -17,7 +17,7 @@ export default function SignIn() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        `https://counterai-backend.onrender.com/api/auth/login`,
         {
           method: "POST",
           headers: {
