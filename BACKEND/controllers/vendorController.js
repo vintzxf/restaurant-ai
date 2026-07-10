@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const VendorApplication = require("../models/VendorApplication");
 const User = require("../models/User");
+const Restaurant = require("../models/Restaurant");
 
 async function isAdmin(userId) {
   if (!userId) return false;
@@ -10,19 +11,7 @@ async function isAdmin(userId) {
 
 // POST /api/vendor/apply
 async function applyAsVendor(req, res) {
-
-  const {
-    businessName,
-    location,
-    phone,
-    email,
-    password,
-    category,
-    menuDescription,
-  } = req.body;
-
-  const normalizedPhone = normalizePhone(phone);
-
+  const { businessName, location, phone, email, password, category, menuDescription } = req.body;
 
   if (!businessName || !phone || !category || !email || !password) {
     return res.status(400).json({
@@ -30,16 +19,8 @@ async function applyAsVendor(req, res) {
     });
   }
 
-  if (normalizedPhone.length < 11) {
-    return res.status(400).json({ message: "Enter a valid phone number." });
-  }
-
   try {
-
-    const existingApplication = await VendorApplication.findOne({
-      phone: normalizedPhone,
-    });
-
+    const existingApplication = await VendorApplication.findOne({ phone });
     if (existingApplication) {
       return res.status(400).json({
         message: "An application with this phone number already exists.",
@@ -47,36 +28,27 @@ async function applyAsVendor(req, res) {
     }
 
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
-      return res.status(400).json({
-        message: "An account with this email already exists.",
-      });
+      return res.status(400).json({ message: "An account with this email already exists." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const otp = generateOtp();
-
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     const application = await VendorApplication.create({
       businessName,
       location,
-
-      phone: normalizedPhone,
+      phone,
       email,
       password: hashedPassword,
-      phone: normalizedPhone,
-
       category,
       menuDescription,
       otp,
-      otpExpiresAt: getOtpExpiresAt(),
     });
 
-    console.log(`\nOTP for ${normalizedPhone} -> ${otp}\n`);
+    console.log(`\n OTP for ${phone} → ${otp}\n`);
 
-    return res.status(201).json(buildOtpResponse(application, otp));
+    return res.status(201).json({ vendorId: application._id });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error. Please try again." });
@@ -86,10 +58,6 @@ async function applyAsVendor(req, res) {
 // POST /api/vendor/verify-otp
 async function verifyOtp(req, res) {
   const { vendorId, otp } = req.body;
-
-  if (!vendorId || !otp) {
-    return res.status(400).json({ message: "Vendor ID and OTP are required." });
-  }
 
   try {
     const application = await VendorApplication.findById(vendorId);
@@ -106,10 +74,10 @@ async function verifyOtp(req, res) {
     application.otp = null;
     await application.save();
 
-    // Now that the phone is confirmed real, create the vendor's login account.
-    // It starts as "pending" — they CAN log in, but the dashboard stays locked
-    // until an admin approves them. This is what lets them check status later
-    // without resubmitting the whole form.
+    // Now that the phone is confirmed real, create the vendor's login account
+    // AND their Restaurant — so there's always somewhere for their menu items
+    // to attach once they're approved. It starts as "pending" — they CAN log
+    // in, but the dashboard stays locked until an admin approves them.
     let user = await User.findOne({ email: application.email });
     if (!user) {
       user = await User.create({
@@ -121,6 +89,15 @@ async function verifyOtp(req, res) {
         role: "vendor",
         status: "pending",
         applicationId: application._id,
+      });
+
+      await Restaurant.create({
+        name: application.businessName,
+        description: application.menuDescription || "",
+        image: "",
+        location: application.location,
+        category: application.category,
+        ownerId: user._id,
       });
     }
 
@@ -134,12 +111,9 @@ async function verifyOtp(req, res) {
   }
 }
 
+// POST /api/vendor/resend-otp
 async function resendOtp(req, res) {
   const { vendorId } = req.body;
-
-  if (!vendorId) {
-    return res.status(400).json({ message: "Vendor ID is required." });
-  }
 
   try {
     const application = await VendorApplication.findById(vendorId);
@@ -148,18 +122,13 @@ async function resendOtp(req, res) {
       return res.status(404).json({ message: "Application not found." });
     }
 
-    if (application.phoneVerified) {
-      return res.status(400).json({ message: "Phone number is already verified." });
-    }
-
-    const otp = generateOtp();
-    application.otp = otp;
-    application.otpExpiresAt = getOtpExpiresAt();
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    application.otp = newOtp;
     await application.save();
 
-    console.log(`\nResent OTP for ${application.phone} -> ${otp}\n`);
+    console.log(`\n Resent OTP for ${application.phone} → ${newOtp}\n`);
 
-    return res.status(200).json(buildOtpResponse(application, otp));
+    return res.status(200).json({ message: "OTP resent." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error. Please try again." });
@@ -167,9 +136,6 @@ async function resendOtp(req, res) {
 }
 
 // GET /api/vendor/status/:phone
-// Lets someone check application status by phone without logging in — used by
-// the Pending Approval page as a fallback (e.g. right after applying, before
-// any account/session exists yet).
 async function getStatusByPhone(req, res) {
   try {
     const application = await VendorApplication.findOne({ phone: req.params.phone });
@@ -222,7 +188,6 @@ async function approveVendor(req, res) {
       return res.status(404).json({ message: "Application not found." });
     }
 
-    // Keep the linked User account in sync so login actually unlocks the dashboard
     await User.findOneAndUpdate({ applicationId: application._id }, { status: "active" });
 
     return res.json({ message: "Vendor approved.", application });
@@ -259,11 +224,7 @@ async function rejectVendor(req, res) {
   }
 }
 
-
-// DELETE /api/vendor/clear-test/:phone
-// Dev-only convenience: deletes a test application AND its linked user account
-// so the phone number and email can be reused while you're testing the flow.
-// Blocked outside development so it can never accidentally run in production.
+// DELETE /api/vendor/clear-test/:phone  (dev only)
 async function clearTestApplication(req, res) {
   if (process.env.NODE_ENV === "production") {
     return res.status(403).json({ message: "Not available in production." });
@@ -275,7 +236,10 @@ async function clearTestApplication(req, res) {
       return res.status(404).json({ message: "No application found for this phone number." });
     }
 
-    await User.findOneAndDelete({ applicationId: application._id });
+    const user = await User.findOneAndDelete({ applicationId: application._id });
+    if (user) {
+      await Restaurant.findOneAndDelete({ ownerId: user._id });
+    }
 
     return res.json({ message: `Cleared application and account for ${req.params.phone}.` });
   } catch (error) {

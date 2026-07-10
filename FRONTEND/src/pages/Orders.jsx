@@ -1,96 +1,88 @@
-import { useState } from "react";
-import Navbar from '../components/Navbar'
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import { getSession } from "../utils/auth";
 import "./Orders.css";
 
-const orders = [
-    {
-        id: "ORD-1042",
-        status: "Delivered",
-        restaurant: "Chicken Republic",
-        items: "2x Grilled Chicken, 1x Fries",
-        date: "Jun 18, 2026",
-        amount: "₦8,500",
-    },
-    {
-        id: "ORD-1041",
-        status: "Delivered",
-        restaurant: "KFC",
-        items: "1x Chicken Bucket",
-        date: "Jun 16, 2026",
-        amount: "₦12,000",
-    },
-    {
-        id: "ORD-1040",
-        status: "On the way",
-        restaurant: "Domino's Pizza",
-        items: "1x Large Pepperoni Pizza",
-        date: "Jun 14, 2026",
-        amount: "₦9,200",
-    },
-    {
-        id: "ORD-1039",
-        status: "Preparing",
-        restaurant: "Chicken Republic",
-        items: "1x Jollof Rice, 1x Drink",
-        date: "Jun 10, 2026",
-        amount: "₦4,300",
-    },
-];
+const TABS = ["All", "New", "Preparing", "Ready", "Completed"];
 
 export default function Orders() {
-    const [activeTab, setActiveTab] = useState("All");
+  const user = getSession();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
 
-    const filteredOrders =
-        activeTab === "All"
-            ? orders
-            : orders.filter((order) => order.status === activeTab);
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    return (
-        <div className="orders-page">
-            <Navbar />
+    fetch(`http://localhost:3000/api/orders/customer/${user._id}`)
+      .then((res) => res.json())
+      .then((data) => setOrders(Array.isArray(data) ? data : []))
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
+  }, [user?._id]);
 
-            <section className="orders-section">
-                <h1>My Orders</h1>
+  const filteredOrders =
+    activeTab === "All" ? orders : orders.filter((order) => order.status === activeTab);
 
-                <div className="filter-tabs">
-                    {["All", "Preparing", "On the way", "Delivered"].map((tab) => (
-                        <button
-                            key={tab}
-                            className={activeTab === tab ? "active" : ""}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-                </div>
+  return (
+    <div className="orders-page">
+      <Navbar />
 
-                <div className="orders-list">
-                    {filteredOrders.map((order) => (
-                        <div className="order-card" key={order.id}>
-                            <div className="order-header">
-                                <h3>#{order.id}</h3>
+      <section className="orders-section">
+        <h1>My Orders</h1>
 
-                                <span
-                                    className={`status ${order.status
-                                        .toLowerCase()
-                                        .replace(/\s/g, "-")}`}
-                                >
-                                    {order.status}
-                                </span>
-                            </div>
+        {!user ? (
+          <p>Sign in to see your orders.</p>
+        ) : (
+          <>
+            <div className="filter-tabs">
+              {TABS.map((tab) => (
+                <button
+                  key={tab}
+                  className={activeTab === tab ? "active" : ""}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
 
-                            <h4>{order.restaurant}</h4>
+            <div className="orders-list">
+              {loading ? (
+                <p>Loading orders…</p>
+              ) : filteredOrders.length === 0 ? (
+                <p>No orders yet.</p>
+              ) : (
+                filteredOrders.map((order) => (
+                  <div className="order-card" key={order._id}>
+                    <div className="order-header">
+                      <h3>#{order._id.slice(-6).toUpperCase()}</h3>
 
-                            <p className="items">{order.items}</p>
+                      <span className={`status ${order.status.toLowerCase()}`}>
+                        {order.status}
+                      </span>
+                    </div>
 
-                            <div className="order-footer">
-                                <span>{order.date}</span>
-                                <strong>{order.amount}</strong>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-        </div>
-    );
+                    <h4>{order.restaurantId?.name || "Restaurant"}</h4>
+
+                    <p className="items">
+                      {order.items.map((i) => `${i.quantity}x ${i.name}`).join(", ")}
+                    </p>
+
+                    <div className="order-footer">
+                      <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                      <strong>₦{order.total?.toLocaleString()}</strong>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
 }

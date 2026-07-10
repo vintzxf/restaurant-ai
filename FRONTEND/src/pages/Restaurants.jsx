@@ -1,31 +1,38 @@
-import { useState } from "react";
-import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { categories, dietFilters, restaurants } from "../data.js";
 import "./Restaurants.css";
 
 export default function Restaurants() {
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
-  const [activeFilter, setActiveFilter] = useState(dietFilters[0]);
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/restaurants")
+      .then((res) => res.json())
+      .then((data) => setRestaurants(Array.isArray(data) ? data : []))
+      .catch(() => setRestaurants([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Categories are derived from real vendor data (set during their
+  // application) rather than a fixed dummy list.
+  const categories = ["All", ...new Set(restaurants.map((r) => r.category).filter(Boolean))];
+
   const normalizedSearch = search.trim().toLowerCase();
 
   const filteredRestaurants = restaurants.filter((restaurant) => {
-    const searchableText = [
-      restaurant.name,
-      restaurant.description,
-      ...restaurant.tags,
-      ...restaurant.categories,
-    ]
+    const searchableText = [restaurant.name, restaurant.description, restaurant.category]
+      .filter(Boolean)
       .join(" ")
       .toLowerCase();
-    const matchesSearch = searchableText.includes(normalizedSearch);
-    const matchesCategory =
-      activeCategory === "All" || restaurant.categories.includes(activeCategory);
-    const matchesDietFilter =
-      activeFilter === "All" || restaurant.tags.includes(activeFilter);
 
-    return matchesSearch && matchesCategory && matchesDietFilter;
+    const matchesSearch = searchableText.includes(normalizedSearch);
+    const matchesCategory = activeCategory === "All" || restaurant.category === activeCategory;
+
+    return matchesSearch && matchesCategory;
   });
 
   return (
@@ -46,54 +53,42 @@ export default function Restaurants() {
           ))}
         </div>
 
-        <div className="categories">
-          {dietFilters.map((filter) => (
-            <button
-              key={filter}
-              className={activeFilter === filter ? "active" : ""}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
-
         <input
           type="text"
-          placeholder="Search for a restaurant, dish, or tag..."
+          placeholder="Search for a restaurant..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </section>
 
       <section className="restaurant-grid">
-        {filteredRestaurants.map((restaurant) => (
-          <div className="restaurant-card" key={restaurant.id}>
-            <img src={restaurant.image} alt={restaurant.name} />
-
-            <div className="card-content">
-              <h3>{restaurant.name}</h3>
-
-              <p className="meta">
-                <Star fill="gold" color="gold" size={14} />
-                {restaurant.rating} - {restaurant.eta} - {restaurant.price}
-              </p>
-
-              <div className="tags">
-                {restaurant.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-
-              <p className="description">{restaurant.description}</p>
-
-              <button className="menu-btn">View Menu</button>
-            </div>
-          </div>
-        ))}
-
-        {filteredRestaurants.length === 0 && (
+        {loading ? (
+          <p className="empty-state">Loading restaurants…</p>
+        ) : filteredRestaurants.length === 0 ? (
           <p className="empty-state">No restaurants match your filters.</p>
+        ) : (
+          filteredRestaurants.map((restaurant) => (
+            <div className="restaurant-card" key={restaurant._id}>
+              {restaurant.image && <img src={restaurant.image} alt={restaurant.name} />}
+
+              <div className="card-content">
+                <h3>{restaurant.name}</h3>
+
+                {restaurant.category && (
+                  <div className="tags">
+                    <span>{restaurant.category}</span>
+                  </div>
+                )}
+
+                <p className="description">{restaurant.description}</p>
+                {restaurant.location && <p className="meta">{restaurant.location}</p>}
+
+                <Link to={`/restaurants/${restaurant._id}`} className="menu-btn">
+                  View Menu
+                </Link>
+              </div>
+            </div>
+          ))
         )}
       </section>
     </div>

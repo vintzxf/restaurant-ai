@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
-import { orders as initialOrders } from "../data.js";
+import { getSession } from "../utils/auth";
 import "./VendorDashboard.css";
 
 const statusColors = {
@@ -21,26 +21,57 @@ const statusFlow = {
 const orderFilters = ["All", "New", "Preparing", "Ready", "Completed"];
 
 export default function VendorOrders() {
-  const [orders, setOrders] = useState(initialOrders);
+  const user = getSession();
+
+  const [restaurant, setRestaurant] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [orderFilter, setOrderFilter] = useState("All");
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const filteredOrders =
-    orderFilter === "All"
-      ? orders
-      : orders.filter((o) => o.status === orderFilter);
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-  function advanceStatus(id) {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === id && statusFlow[o.status]
-          ? { ...o, status: statusFlow[o.status] }
-          : o
-      )
-    );
-    if (selectedOrder && selectedOrder.id === id) {
-      const next = statusFlow[selectedOrder.status];
-      if (next) setSelectedOrder({ ...selectedOrder, status: next });
+    fetch("http://localhost:3000/api/restaurants/mine", {
+      headers: { "x-user-id": user._id },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data._id) return [];
+        setRestaurant(data);
+        return fetch(`http://localhost:3000/api/orders/restaurant/${data._id}`).then((r) =>
+          r.json()
+        );
+      })
+      .then((data) => setOrders(Array.isArray(data) ? data : []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [user?._id]);
+
+  const filteredOrders =
+    orderFilter === "All" ? orders : orders.filter((o) => o.status === orderFilter);
+
+  async function advanceStatus(order) {
+    const next = statusFlow[order.status];
+    if (!next) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/orders/${order._id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      const updated = await response.json();
+
+      setOrders((prev) => prev.map((o) => (o._id === order._id ? updated : o)));
+      if (selectedOrder && selectedOrder._id === order._id) {
+        setSelectedOrder(updated);
+      }
+    } catch {
+      // The button stays clickable, so the vendor can just retry.
     }
   }
 
@@ -60,14 +91,15 @@ export default function VendorOrders() {
           <Link to="/vendor">Dashboard</Link>
           <Link to="/vendor/orders" className="active">Orders</Link>
           <Link to="/vendor/menu">Menu Builder</Link>
-          <Link to="/vendor/customers">Customers</Link>
           <Link to="/vendor/settings">Settings</Link>
         </nav>
         <div className="profile-box card">
-          <div className="avatar-circle">SP</div>
+          <div className="avatar-circle">
+            {(restaurant?.name || "V").slice(0, 2).toUpperCase()}
+          </div>
           <div>
-            <p className="profile-name">Spice Paradise</p>
-            <p className="profile-location">Wuse 2, Abuja</p>
+            <p className="profile-name">{restaurant?.name || "Vendor"}</p>
+            <p className="profile-location">{restaurant?.location || ""}</p>
           </div>
         </div>
       </aside>
@@ -83,7 +115,6 @@ export default function VendorOrders() {
           </div>
         </div>
 
-        {/* Status summary strip */}
         <div className="stat-grid" style={{ marginBottom: "1.5rem" }}>
           {Object.entries(counts).map(([status, count]) => (
             <div className="card stat-card" key={status}>
@@ -96,7 +127,10 @@ export default function VendorOrders() {
           ))}
         </div>
 
-        <div className="panel-grid" style={{ gridTemplateColumns: selectedOrder ? "1fr 340px" : "1fr" }}>
+        <div
+          className="panel-grid"
+          style={{ gridTemplateColumns: selectedOrder ? "1fr 340px" : "1fr" }}
+        >
           <div className="card panel">
             <div className="filter-row">
               {orderFilters.map((s) => (
@@ -128,7 +162,13 @@ export default function VendorOrders() {
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "2rem", opacity: 0.5 }}>
+                      Loading orders…
+                    </td>
+                  </tr>
+                ) : filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan="7" style={{ textAlign: "center", padding: "2rem", opacity: 0.5 }}>
                       No {orderFilter !== "All" ? orderFilter.toLowerCase() : ""} orders right now.
@@ -137,15 +177,23 @@ export default function VendorOrders() {
                 ) : (
                   filteredOrders.map((order) => (
                     <tr
-                      key={order.id}
-                      style={{ cursor: "pointer", background: selectedOrder?.id === order.id ? "var(--hover)" : "" }}
+                      key={order._id}
+                      style={{
+                        cursor: "pointer",
+                        background: selectedOrder?._id === order._id ? "var(--hover)" : "",
+                      }}
                       onClick={() => setSelectedOrder(order)}
                     >
-                      <td>#{order.id}</td>
-                      <td>{order.customer}</td>
-                      <td>{order.items ? order.items.length : "-"}</td>
-                      <td>{order.total}</td>
-                      <td>{order.time || "-"}</td>
+                      <td>#{order._id.slice(-6).toUpperCase()}</td>
+                      <td>{order.customerId?.name || "Customer"}</td>
+                      <td>{order.items.length}</td>
+                      <td>₦{order.total?.toLocaleString()}</td>
+                      <td>
+                        {new Date(order.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
                       <td>
                         <span className={"badge " + statusColors[order.status]}>
                           {order.status}
@@ -156,7 +204,10 @@ export default function VendorOrders() {
                           <button
                             className="pill-btn active"
                             style={{ fontSize: "0.75rem", padding: "4px 10px" }}
-                            onClick={(e) => { e.stopPropagation(); advanceStatus(order.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              advanceStatus(order);
+                            }}
                           >
                             Mark {statusFlow[order.status]}
                           </button>
@@ -171,48 +222,72 @@ export default function VendorOrders() {
             </table>
           </div>
 
-          {/* Order detail panel */}
           {selectedOrder && (
             <div className="card panel" style={{ position: "relative" }}>
               <button
                 onClick={() => setSelectedOrder(null)}
-                style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem", opacity: 0.5 }}
+                style={{
+                  position: "absolute",
+                  top: "1rem",
+                  right: "1rem",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  opacity: 0.5,
+                }}
               >
                 ✕
               </button>
-              <h3>Order #{selectedOrder.id}</h3>
+              <h3>Order #{selectedOrder._id.slice(-6).toUpperCase()}</h3>
               <p style={{ opacity: 0.6, fontSize: "0.85rem", marginBottom: "1rem" }}>
-                {selectedOrder.customer} - {selectedOrder.time || "-"}
+                {selectedOrder.customerId?.name || "Customer"} —{" "}
+                {new Date(selectedOrder.createdAt).toLocaleString()}
               </p>
 
-              <span className={"badge " + statusColors[selectedOrder.status]} style={{ marginBottom: "1.5rem", display: "inline-block" }}>
+              <span
+                className={"badge " + statusColors[selectedOrder.status]}
+                style={{ marginBottom: "1.5rem", display: "inline-block" }}
+              >
                 {selectedOrder.status}
               </span>
 
               <div style={{ marginTop: "1rem" }}>
                 <p style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Items</p>
-                {selectedOrder.items ? (
-                  selectedOrder.items.map((item, i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "0.4rem 0", borderBottom: "1px solid var(--border)", fontSize: "0.9rem" }}>
-                      <span>{item.name}</span>
-                      <span style={{ opacity: 0.7 }}>x{item.qty}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ opacity: 0.5, fontSize: "0.85rem" }}>No item breakdown available.</p>
-                )}
+                {selectedOrder.items.map((item, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.4rem 0",
+                      borderBottom: "1px solid var(--border)",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    <span>{item.name}</span>
+                    <span style={{ opacity: 0.7 }}>x{item.quantity}</span>
+                  </div>
+                ))}
               </div>
 
-              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
+              <div
+                style={{
+                  marginTop: "1.5rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontWeight: 700,
+                }}
+              >
                 <span>Total</span>
-                <span>{selectedOrder.total}</span>
+                <span>₦{selectedOrder.total?.toLocaleString()}</span>
               </div>
 
               {statusFlow[selectedOrder.status] && (
                 <button
                   className="btn btn-primary full-width"
                   style={{ marginTop: "1.5rem" }}
-                  onClick={() => advanceStatus(selectedOrder.id)}
+                  onClick={() => advanceStatus(selectedOrder)}
                 >
                   Mark as {statusFlow[selectedOrder.status]}
                 </button>

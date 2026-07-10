@@ -1,19 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { getSession } from "../utils/auth";
 import "./VendorDashboard.css";
 import "./VendorSettings.css";
 
 export default function VendorSettings() {
-  // Store profile section
-  const [storeName, setStoreName] = useState("Spice Paradise");
-  const [location, setLocation] = useState("Wuse 2, Abuja");
-  const [phone, setPhone] = useState("08012345678");
-  const [category, setCategory] = useState("Nigerian Cuisine");
-  const [bio, setBio] = useState(
-    "Authentic Nigerian flavors made fresh daily. Known for our smoky party jollof and pepper soup."
-  );
+  const user = getSession();
+
+  // Store profile section — starts empty and loads the vendor's real
+  // restaurant record instead of the old hardcoded "Spice Paradise" demo data.
+  const [storeName, setStoreName] = useState("");
+  const [location, setLocation] = useState("");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [category, setCategory] = useState("");
+  const [bio, setBio] = useState("");
   const [storeSuccess, setStoreSuccess] = useState("");
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    if (!user) {
+      setLoadingProfile(false);
+      return;
+    }
+
+    fetch("http://localhost:3000/api/restaurants/mine", {
+      headers: { "x-user-id": user._id },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data._id) return;
+        setStoreName(data.name || "");
+        setLocation(data.location || "");
+        setCategory(data.category || "");
+        setBio(data.description || "");
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, [user?._id]);
 
   // Notifications section
   const [notifyNewOrder, setNotifyNewOrder] = useState(true);
@@ -29,9 +53,10 @@ export default function VendorSettings() {
 
   function handleStoreSave(e) {
     e.preventDefault();
-    // In production, POST to /api/vendor/profile
-    setStoreSuccess("Store details saved.");
-    setTimeout(() => setStoreSuccess(""), 3000);
+    // Not yet wired to a real endpoint — this round's scope was menu/orders/stats.
+    // Happy to make this real too (PATCH /api/restaurants/mine) if you want it next.
+    setStoreSuccess("Store details saved locally (not yet persisted to the server).");
+    setTimeout(() => setStoreSuccess(""), 4000);
   }
 
   function handlePasswordSave(e) {
@@ -48,7 +73,7 @@ export default function VendorSettings() {
       return;
     }
 
-    // In production, POST to /api/auth/change-password
+    // Not yet wired to a real endpoint either — same as above.
     setPasswordSuccess("Password updated.");
     setCurrentPassword("");
     setNewPassword("");
@@ -67,14 +92,15 @@ export default function VendorSettings() {
           <Link to="/vendor">Dashboard</Link>
           <Link to="/vendor/orders">Orders</Link>
           <Link to="/vendor/menu">Menu Builder</Link>
-          <Link to="/vendor/customers">Customers</Link>
           <Link to="/vendor/settings" className="active">Settings</Link>
         </nav>
         <div className="profile-box card">
-          <div className="avatar-circle">SP</div>
+          <div className="avatar-circle">
+            {(storeName || "V").slice(0, 2).toUpperCase()}
+          </div>
           <div>
-            <p className="profile-name">Spice Paradise</p>
-            <p className="profile-location">Wuse 2, Abuja</p>
+            <p className="profile-name">{storeName || "Vendor"}</p>
+            <p className="profile-location">{location}</p>
           </div>
         </div>
       </aside>
@@ -100,6 +126,7 @@ export default function VendorSettings() {
                     type="text"
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
+                    disabled={loadingProfile}
                   />
                 </div>
                 <div className="form-group">
@@ -108,6 +135,7 @@ export default function VendorSettings() {
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
+                    disabled={loadingProfile}
                   />
                 </div>
               </div>
@@ -119,6 +147,7 @@ export default function VendorSettings() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    disabled={loadingProfile}
                   />
                 </div>
                 <div className="form-group">
@@ -127,6 +156,7 @@ export default function VendorSettings() {
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
+                    disabled={loadingProfile}
                   />
                 </div>
               </div>
@@ -137,6 +167,7 @@ export default function VendorSettings() {
                   rows={3}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  disabled={loadingProfile}
                 />
               </div>
 
