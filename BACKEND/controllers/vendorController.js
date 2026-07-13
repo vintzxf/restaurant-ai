@@ -1,3 +1,4 @@
+const { sendOtpEmail } = require("../utils/mailer");
 const bcrypt = require("bcrypt");
 const VendorApplication = require("../models/VendorApplication");
 const User = require("../models/User");
@@ -46,7 +47,7 @@ async function applyAsVendor(req, res) {
       otp,
     });
 
-    console.log(`\n OTP for ${phone} → ${otp}\n`);
+    await sendOtpEmail(email, otp, businessName);
 
     return res.status(201).json({ vendorId: application._id });
   } catch (error) {
@@ -126,7 +127,7 @@ async function resendOtp(req, res) {
     application.otp = newOtp;
     await application.save();
 
-    console.log(`\n Resent OTP for ${application.phone} → ${newOtp}\n`);
+    await sendOtpEmail(application.email, newOtp, application.businessName);
 
     return res.status(200).json({ message: "OTP resent." });
   } catch (error) {
