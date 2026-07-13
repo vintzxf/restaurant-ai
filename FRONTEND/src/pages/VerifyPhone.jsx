@@ -7,7 +7,7 @@ import "./VerifyPhone.css";
 export default function VerifyPhone() {
   const navigate = useNavigate();
 
-  const phone = sessionStorage.getItem("pendingPhone") || "";
+  const email = sessionStorage.getItem("pendingEmail") || "";
   const vendorId = sessionStorage.getItem("pendingVendorId") || "";
 
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
@@ -24,8 +24,8 @@ export default function VerifyPhone() {
   }, [resendCooldown]);
 
   useEffect(() => {
-    if (!phone || !vendorId) navigate("/vendor-apply");
-  }, [phone, vendorId, navigate]);
+    if (!email || !vendorId) navigate("/vendor-apply");
+  }, [email, vendorId, navigate]);
 
   function handleDigitChange(index, value) {
     const cleaned = value.replace(/\D/g, "").slice(-1);
@@ -84,7 +84,7 @@ export default function VerifyPhone() {
         return;
       }
 
-      sessionStorage.removeItem("pendingPhone");
+      sessionStorage.removeItem("pendingEmail");
       sessionStorage.removeItem("pendingVendorId");
       sessionStorage.removeItem("pendingDevOtp");
       navigate("/pending-approval");
@@ -125,20 +125,20 @@ export default function VerifyPhone() {
     }
   }
 
-  const maskedPhone = phone
-    ? phone.slice(0, 4) + "****" + phone.slice(-3)
-    : "your number";
+  const maskedEmail = email
+    ? email.replace(/^(.{2}).*(@.*)$/, "$1****$2")
+    : "your email";
 
   return (
     <>
       <Navbar />
       <div className="auth-page">
         <div className="auth-card verify-card card">
-          <div className="verify-icon">Phone</div>
-          <h1>Verify your number</h1>
+          <div className="verify-icon">Email</div>
+          <h1>Verify your email</h1>
           <p className="subtitle">
-            We sent a 6-digit code to <strong>{maskedPhone}</strong>.
-            Enter it below to confirm your phone number.
+            We sent a 6-digit code to <strong>{maskedEmail}</strong>.
+            Enter it below to confirm your email address.
           </p>
 
           <form onSubmit={handleVerify}>

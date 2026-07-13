@@ -23,6 +23,9 @@ export default function VendorApply() {
   const [businessName, setBusinessName] = useState("");
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [category, setCategory] = useState("");
   const [menuDescription, setMenuDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,6 +45,21 @@ export default function VendorApply() {
       return;
     }
 
+    if (!email) {
+      setErrorMessage("Enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -52,6 +70,8 @@ export default function VendorApply() {
           businessName,
           location,
           phone,
+          email,
+          password,
           category,
           menuDescription,
         }),
@@ -65,8 +85,7 @@ export default function VendorApply() {
         return;
       }
 
-   
-      sessionStorage.setItem("pendingPhone", phone);
+      sessionStorage.setItem("pendingEmail", email);
       sessionStorage.setItem("pendingVendorId", data.vendorId);
       if (data.devOtp) {
         sessionStorage.setItem("pendingDevOtp", data.devOtp);
@@ -148,6 +167,41 @@ export default function VendorApply() {
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="At least 6 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group full-width">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
             <div className="form-group full-width">
               <label>Brief Menu Description</label>
               <textarea
@@ -164,7 +218,7 @@ export default function VendorApply() {
             <div className="apply-info-box">
               <span className="info-icon">ℹ</span>
               <p>
-                After submitting, you'll verify your phone number with a
+                After submitting, you'll verify your email with a
                 one-time code. Your application then goes to our admin team for
                 review — usually within 24 hours.
               </p>
